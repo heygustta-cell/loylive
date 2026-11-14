@@ -1,0 +1,18 @@
+# Programa do servidor (baixado pelo instalador)
+artefatos/
+cache/
+txData/
+
+# Sua chave do servidor
+chave.cfg
+
+# Recursos básicos do FiveM (baixados pelo instalador); só o nosso fica no Git
+resources/*
+!resources/fotografia/
+
+# Dados do servidor (looks e locais salvos pelos jogadores)
+resources/fotografia/data/*.json
+
+*.7z
+*.zip
+*.tar.xz

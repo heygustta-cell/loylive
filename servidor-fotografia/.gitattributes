@@ -1,0 +1,4 @@
+# Scripts do Windows precisam de quebra de linha CRLF; os do Linux, LF
+*.bat -text
+*.ps1 -text
+*.sh text eol=lf

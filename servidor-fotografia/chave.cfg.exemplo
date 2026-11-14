@@ -1,0 +1,4 @@
+# Copie este arquivo para "chave.cfg" e cole sua chave entre as aspas.
+# Pegue a chave grátis em https://portal.cfx.re  (Servers > Registration Keys)
+# Este arquivo não vai para o Git, para a chave não vazar.
+sv_licenseKey "COLE_SUA_CHAVE_AQUI"

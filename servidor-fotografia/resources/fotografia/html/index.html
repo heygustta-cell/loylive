@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Painel de Fotografia</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="painel" aria-hidden="true">
+    <nav id="abas" aria-label="Seções"></nav>
+    <section id="conteudo">
+      <header id="topo">
+        <div>
+          <p class="sobretitulo" id="nome-servidor">Estúdio de fotografia</p>
+          <h1 id="titulo">Câmera</h1>
+        </div>
+        <button id="fechar" class="icone-btn" type="button" title="Fechar (Esc)" aria-label="Fechar">
+          <svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </header>
+      <div id="corpo"></div>
+      <footer id="rodape"></footer>
+    </section>
+  </div>
+  <div id="avisos" aria-live="polite"></div>
+  <script src="app.js"></script>
+</body>
+</html>
