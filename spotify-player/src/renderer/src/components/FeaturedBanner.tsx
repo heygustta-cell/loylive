@@ -67,7 +67,7 @@ export function FeaturedBanner({ recent }: { recent: Track | null }) {
           {eyebrow}
           {contextName && current ? ` · ${contextName}` : ''}
         </span>
-        <h2 key={source.uri} className="featured-title display">
+        <h2 key={source.uri} className={`featured-title display${source.title.length > 28 ? ' long' : ''}`}>
           {source.title}
         </h2>
         <span className="featured-sub">

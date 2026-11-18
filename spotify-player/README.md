@@ -28,6 +28,7 @@ dispositivo Spotify Connect usando o **Web Playback SDK** com **Widevine** (Elec
    Client ID do Spotify, instala as dependências e faz a assinatura VMP (castLabs EVS) — tudo guiado em português.
    Se ele instalar algum programa, feche a janela e rode o `instalar.cmd` de novo.
 3. Para abrir o app depois: **`iniciar.cmd`**. Para gerar um instalador de verdade: **`criar-instalador.cmd`**.
+4. Para receber melhorias: **`atualizar.cmd`** (baixa a versão nova e mantém seu `.env` e a assinatura VMP).
 
 As seções abaixo explicam cada etapa em detalhe (e o que fazer se algo der errado).
 

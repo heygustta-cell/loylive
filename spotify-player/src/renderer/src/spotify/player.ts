@@ -390,7 +390,19 @@ async function ensureActive(): Promise<boolean> {
 }
 
 export async function togglePlay(): Promise<void> {
-  if (!player || !(await ensureActive())) return
+  if (!player) return
+  const before = usePlayer.getState()
+  if (!before.active) {
+    // Não estava ativo: a transferência (play: true) já começa a tocar. Chamar togglePlay() depois
+    // pausaria de novo — era o bug do "aperto play e não toca".
+    if (!before.deviceId) {
+      notify('O player ainda não está pronto', { body: before.error?.message, intent: 'warning' })
+      return
+    }
+    usePlayer.setState({ paused: false, buffering: true })
+    await transferHere(false)
+    return
+  }
   const s = usePlayer.getState()
   // Atualização otimista para resposta instantânea na interface.
   usePlayer.setState({ paused: !s.paused, position: currentPosition(), updatedAt: performance.now() })
