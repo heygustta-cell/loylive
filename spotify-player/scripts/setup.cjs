@@ -65,8 +65,10 @@ async function confirm(question, defaultYes = true) {
 }
 
 function run(cmd, cmdArgs, options = {}) {
-  // npm/npx no Windows são .cmd → precisam de shell.
-  return spawnSync(cmd, cmdArgs, { stdio: 'inherit', cwd: ROOT, shell: isWin, ...options })
+  // npm/npx no Windows são .cmd → precisam de shell. Passamos uma linha de comando única (argumentos fixos,
+  // sem entrada do usuário) para evitar o aviso DEP0190 do Node 24 sobre "args" com shell.
+  if (isWin) return spawnSync([cmd, ...cmdArgs].join(' '), { stdio: 'inherit', cwd: ROOT, shell: true, ...options })
+  return spawnSync(cmd, cmdArgs, { stdio: 'inherit', cwd: ROOT, ...options })
 }
 
 function openUrl(url) {
@@ -103,7 +105,7 @@ function checkTools() {
     process.exit(1)
   }
   ok(`Node.js ${process.versions.node}`)
-  const git = spawnSync('git', ['--version'], { encoding: 'utf8', shell: isWin })
+  const git = spawnSync('git', ['--version'], { encoding: 'utf8', windowsHide: true })
   if (git.status === 0) ok(git.stdout.trim())
   else warn('Git não encontrado — normalmente não é necessário, mas se o "npm install" falhar, instale em https://git-scm.com')
 }
