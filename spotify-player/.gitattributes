@@ -1,0 +1,2 @@
+# Scripts .cmd precisam de CRLF no Windows
+*.cmd text eol=crlf

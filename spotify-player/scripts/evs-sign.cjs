@@ -11,7 +11,7 @@
  *                            python -m castlabs_evs.account signup   (ou "reauth" para entrar)
  * Para pular (build de teste): defina SKIP_VMP_SIGN=1.
  */
-const { execFileSync } = require('node:child_process')
+const { findPython, runPython } = require('./python.cjs')
 
 const hasCodeSigning = () => Boolean(process.env.CSC_LINK || process.env.WIN_CSC_LINK)
 
@@ -27,17 +27,18 @@ function vmpSign(context, hook) {
     console.warn('[vmp] SKIP_VMP_SIGN definido — o app NÃO terá assinatura VMP (o Spotify pode recusar a licença).')
     return
   }
-  const python = process.env.PYTHON || 'python'
+  const py = findPython()
+  if (!py) throw new Error('[vmp] Python 3 não encontrado (necessário para o castlabs-evs). Instale em https://www.python.org')
   const dir = context.appOutDir
   console.log(`[vmp] ${hook}: assinando com castLabs EVS → ${dir}`)
-  try {
-    execFileSync(python, ['-m', 'castlabs_evs.vmp', 'sign-pkg', dir], { stdio: 'inherit' })
-    execFileSync(python, ['-m', 'castlabs_evs.vmp', 'verify-pkg', dir], { stdio: 'inherit' })
-  } catch (err) {
-    throw new Error(
-      '[vmp] Falha na assinatura VMP. Instale o castlabs-evs (python -m pip install --upgrade castlabs-evs), ' +
-        'faça login (python -m castlabs_evs.account reauth) e tente de novo. Detalhe: ' + err.message
-    )
+  for (const cmd of ['sign-pkg', 'verify-pkg']) {
+    const r = runPython(py, ['-m', 'castlabs_evs.vmp', cmd, dir])
+    if (r.status !== 0) {
+      throw new Error(
+        `[vmp] Falha em "${cmd}". Instale o castlabs-evs (python -m pip install --upgrade castlabs-evs), ` +
+          'faça login (python -m castlabs_evs.account reauth) e tente de novo.'
+      )
+    }
   }
 }
 

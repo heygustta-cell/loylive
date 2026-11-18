@@ -20,6 +20,19 @@ dispositivo Spotify Connect usando o **Web Playback SDK** com **Widevine** (Elec
 
 ---
 
+## ⚡ Instalação rápida (Windows)
+
+1. Baixe o projeto (botão **Code → Download ZIP** no GitHub), extraia e copie a pasta `spotify-player` para um
+   caminho curto, por exemplo `C:\Sonora`.
+2. Dê dois cliques em **`instalar.cmd`**. Ele instala o que faltar (Node.js, Git, Python via `winget`), pede o
+   Client ID do Spotify, instala as dependências e faz a assinatura VMP (castLabs EVS) — tudo guiado em português.
+   Se ele instalar algum programa, feche a janela e rode o `instalar.cmd` de novo.
+3. Para abrir o app depois: **`iniciar.cmd`**. Para gerar um instalador de verdade: **`criar-instalador.cmd`**.
+
+As seções abaixo explicam cada etapa em detalhe (e o que fazer se algo der errado).
+
+---
+
 ## 1. Pré-requisitos
 
 | Item | Observação |
