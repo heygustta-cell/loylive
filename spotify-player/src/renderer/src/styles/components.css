@@ -1,0 +1,774 @@
+/* ─── Arte (capa) com fade-in ao carregar ────────────────────────────────────────────────── */
+.art {
+  position: relative;
+  overflow: hidden;
+  background: var(--card);
+  border-radius: var(--radius-control);
+}
+.art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 360ms var(--ease-std);
+}
+.art img.loaded {
+  opacity: 1;
+}
+.art .art-ph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-3);
+  font-size: 40%;
+}
+.art.round {
+  border-radius: 50%;
+}
+
+/* ─── Cabeçalho de página ────────────────────────────────────────────────────────────────── */
+.page-title {
+  margin: 0 0 20px;
+}
+.section {
+  margin-top: 36px;
+}
+.section:first-child {
+  margin-top: 0;
+}
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.section-head h2 {
+  margin: 0;
+}
+.section-head .actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* ─── Cabeçalho de coleção (playlist/álbum/artista) ──────────────────────────────────────── */
+.hero {
+  display: flex;
+  align-items: flex-end;
+  gap: 28px;
+  margin-bottom: 28px;
+}
+.hero-art {
+  width: 216px;
+  height: 216px;
+  flex: none;
+  border-radius: var(--radius-overlay);
+  box-shadow:
+    0 16px 40px rgba(0, 0, 0, 0.28),
+    0 2px 8px rgba(0, 0, 0, 0.16);
+}
+.hero-art.round {
+  border-radius: 50%;
+}
+.hero-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.hero-kind {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.hero-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(28px, 3.6vw, 52px);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.hero-desc {
+  color: var(--text-2);
+  max-width: 760px;
+}
+.hero-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  color: var(--text-2);
+}
+.hero-meta .dot::before {
+  content: '•';
+  margin-right: 6px;
+  color: var(--text-3);
+}
+.hero-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* ─── Cartões (álbuns, playlists, artistas) ──────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(176px, 1fr));
+  gap: 8px;
+  margin: 0 -10px;
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 10px 12px;
+  border-radius: var(--radius-overlay);
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  min-width: 0;
+  transition:
+    background var(--dur-fast) var(--ease-std),
+    border-color var(--dur-fast) var(--ease-std);
+}
+.card:hover {
+  background: var(--card);
+  border-color: var(--stroke-card);
+}
+.card:active {
+  background: var(--card-2);
+}
+.card-art-wrap {
+  position: relative;
+  aspect-ratio: 1;
+  margin-bottom: 8px;
+  transition: transform 300ms var(--ease-enter);
+}
+.card:hover .card-art-wrap {
+  transform: translate3d(0, -3px, 0);
+}
+.card:active .card-art-wrap {
+  transform: scale(0.98);
+}
+.card-art-wrap::before {
+  /* Sombra pré-renderizada: só a opacidade anima (compositor). */
+  content: '';
+  position: absolute;
+  inset: 6px 6px 0;
+  border-radius: var(--radius-overlay);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.32);
+  opacity: 0;
+  transition: opacity 300ms var(--ease-std);
+}
+.card:hover .card-art-wrap::before {
+  opacity: 1;
+}
+.card-art-wrap .art {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-control);
+}
+.card.artist .card-art-wrap .art,
+.card.artist .card-art-wrap::before {
+  border-radius: 50%;
+}
+.card.artist {
+  text-align: center;
+}
+.card-play {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  display: grid;
+  place-items: center;
+  font-size: 20px;
+  background: var(--accent-fill);
+  color: var(--accent-on-fill);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translate3d(0, 8px, 0) scale(0.9);
+  transition:
+    opacity var(--dur-normal) var(--ease-std),
+    transform var(--dur-normal) var(--ease-enter),
+    background var(--dur-fast) var(--ease-std);
+}
+.card:hover .card-play,
+.card:focus-within .card-play {
+  opacity: 1;
+  transform: none;
+}
+.card-play:hover {
+  background: var(--accent-fill-hover);
+  transform: scale(1.08) !important;
+}
+.card-play:active {
+  transform: scale(0.94) !important;
+}
+.card-title {
+  font-weight: 600;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.card-sub {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* Prateleira horizontal */
+.shelf-wrap {
+  position: relative;
+  margin: 0 -10px;
+}
+.shelf {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 176px;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  padding-bottom: 4px;
+}
+.shelf::-webkit-scrollbar {
+  display: none;
+}
+.shelf > * {
+  scroll-snap-align: start;
+}
+
+/* ─── Lista de faixas (virtualizada) ─────────────────────────────────────────────────────── */
+.tracklist {
+  container-type: inline-size;
+  position: relative;
+}
+.tl-head,
+.tl-row {
+  display: grid;
+  grid-template-columns: 48px minmax(0, 5fr) minmax(0, 3fr) 40px 64px;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px 0 4px;
+}
+.tracklist[data-album='false'] .tl-head,
+.tracklist[data-album='false'] .tl-row {
+  grid-template-columns: 48px minmax(0, 1fr) 40px 64px;
+}
+@container (max-width: 640px) {
+  .tl-head,
+  .tl-row {
+    grid-template-columns: 48px minmax(0, 1fr) 40px 64px !important;
+  }
+  .tl-album {
+    display: none !important;
+  }
+}
+.tl-head {
+  height: 36px;
+  font-size: 12px;
+  color: var(--text-2);
+  border-bottom: 1px solid var(--stroke-divider);
+  margin-bottom: 6px;
+}
+.tl-head .tl-dur {
+  text-align: right;
+}
+.tl-body {
+  position: relative;
+}
+.tl-row {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 54px;
+  border-radius: var(--radius-control);
+  color: var(--text-1);
+  transition: background var(--dur-fast) var(--ease-std);
+}
+.tl-row[data-odd='true'] {
+  background: var(--card-2);
+}
+.tl-row:hover {
+  background: var(--subtle-hover);
+}
+.tl-row[data-selected='true'] {
+  background: var(--accent-soft);
+}
+.tl-row[data-playing='true'] .tl-name {
+  color: var(--accent-text);
+}
+.tl-row[data-unplayable='true'] {
+  opacity: 0.45;
+}
+.tl-index {
+  display: grid;
+  place-items: center;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+  position: relative;
+  height: 100%;
+}
+.tl-index .num {
+  transition: opacity var(--dur-fast) var(--ease-std);
+}
+.tl-index .play {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: var(--text-1);
+  font-size: 18px;
+  opacity: 0;
+  transform: scale(0.8);
+  transition:
+    opacity var(--dur-fast) var(--ease-std),
+    transform var(--dur-fast) var(--ease-enter),
+    background var(--dur-fast) var(--ease-std);
+}
+.tl-row:hover .tl-index .play {
+  opacity: 1;
+  transform: none;
+}
+.tl-row:hover .tl-index .num,
+.tl-row:hover .tl-index .eq {
+  opacity: 0;
+}
+.tl-index .play:hover {
+  background: var(--accent-fill);
+  color: var(--accent-on-fill);
+}
+.tl-main {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.tl-main .art {
+  width: 40px;
+  height: 40px;
+  flex: none;
+}
+.tl-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.tl-name {
+  font-weight: 500;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tl-artists {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.tl-album {
+  color: var(--text-2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.tl-like {
+  display: grid;
+  place-items: center;
+}
+.tl-dur {
+  text-align: right;
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+.explicit {
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  background: var(--text-3);
+  color: var(--solid-bg);
+}
+.like-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-2);
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  opacity: 0;
+  transition:
+    opacity var(--dur-fast) var(--ease-std),
+    background var(--dur-fast) var(--ease-std);
+}
+.like-btn[data-liked='true'] {
+  opacity: 1;
+  color: var(--accent-text);
+}
+.like-btn[data-liked='true'] svg {
+  animation: pop-in 300ms var(--ease-enter);
+}
+.tl-row:hover .like-btn,
+.player .like-btn,
+.like-btn:focus-visible {
+  opacity: 1;
+}
+.like-btn:hover {
+  background: var(--subtle-hover);
+  color: var(--text-1);
+}
+.like-btn[data-liked='true']:hover {
+  color: var(--accent-text);
+}
+
+/* Equalizador animado (faixa tocando) */
+.eq {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
+  transition: opacity var(--dur-fast) var(--ease-std);
+}
+.eq span {
+  width: 3px;
+  height: 100%;
+  border-radius: 1px;
+  background: var(--accent-text);
+  transform-origin: 50% 100%;
+  animation: eq 0.9s ease-in-out infinite;
+  will-change: transform;
+}
+.eq span:nth-child(2) {
+  animation-delay: -0.3s;
+  animation-duration: 0.75s;
+}
+.eq span:nth-child(3) {
+  animation-delay: -0.55s;
+  animation-duration: 1.05s;
+}
+.eq[data-paused='true'] span {
+  animation-play-state: paused;
+}
+
+/* ─── Estados vazios / erro ──────────────────────────────────────────────────────────────── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--text-2);
+  animation: rise-in 420ms var(--ease-enter) both;
+}
+.empty .icon {
+  font-size: 48px;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+.empty h3 {
+  margin: 0;
+  color: var(--text-1);
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+}
+.infobar-wrap {
+  margin-bottom: 16px;
+  animation: rise-in 360ms var(--ease-enter) both;
+}
+
+/* ─── Busca ──────────────────────────────────────────────────────────────────────────────── */
+.searchbox {
+  width: 100%;
+}
+.search-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 24px;
+  align-items: start;
+}
+.top-result {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  border-radius: var(--radius-overlay);
+  background: var(--card);
+  border: 1px solid var(--stroke-card);
+  color: inherit;
+  text-align: left;
+  min-width: 0;
+  transition: background var(--dur-fast) var(--ease-std);
+}
+.top-result:hover {
+  background: var(--control-hover);
+}
+.top-result .art {
+  width: 104px;
+  height: 104px;
+  box-shadow: var(--shadow-flyout);
+}
+.top-result .art.round {
+  border-radius: 50%;
+}
+@media (max-width: 1100px) {
+  .search-top {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Fila ───────────────────────────────────────────────────────────────────────────────── */
+.now-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 16px;
+  border-radius: var(--radius-overlay);
+  background: var(--card);
+  border: 1px solid var(--stroke-card);
+  margin-bottom: 28px;
+}
+.now-card .art {
+  width: 88px;
+  height: 88px;
+  flex: none;
+  box-shadow: var(--shadow-flyout);
+}
+
+/* ─── Configurações (cartões no estilo do app Configurações) ─────────────────────────────── */
+.settings {
+  max-width: 1000px;
+}
+.settings h3 {
+  margin: 28px 0 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.setting {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 68px;
+  padding: 12px 16px;
+  border-radius: var(--radius-control);
+  background: var(--card);
+  border: 1px solid var(--stroke-card);
+}
+.setting .setting-icon {
+  font-size: 20px;
+  width: 24px;
+  display: grid;
+  place-items: center;
+  color: var(--text-1);
+  flex: none;
+}
+.setting .setting-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.setting .setting-desc {
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--text-2);
+}
+.setting .setting-control {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.setting.stack {
+  flex-direction: column;
+  align-items: stretch;
+}
+.code {
+  font-family: 'Cascadia Code', 'Cascadia Mono', Consolas, monospace;
+  font-size: 12px;
+  padding: 2px 6px;
+  border-radius: var(--radius-control);
+  background: var(--control);
+  border: 1px solid var(--stroke-control);
+  user-select: text;
+}
+.kv {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 6px 16px;
+  font-size: 12px;
+}
+.kv dt {
+  color: var(--text-2);
+}
+.kv dd {
+  margin: 0;
+  user-select: text;
+}
+
+/* ─── Login ──────────────────────────────────────────────────────────────────────────────── */
+.login {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 48px 24px 24px;
+}
+.login-drag {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: var(--titlebar-h);
+  width: env(titlebar-area-width, 100%);
+  -webkit-app-region: drag;
+  display: flex;
+  align-items: center;
+  padding-left: 16px;
+  gap: 10px;
+  font-size: 12px;
+}
+.login-card {
+  width: min(520px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 36px 40px 32px;
+  border-radius: var(--radius-overlay);
+  background: var(--layer-alt);
+  border: 1px solid var(--stroke-surface);
+  box-shadow: var(--shadow-dialog);
+  animation: fluent-enter 600ms var(--ease-enter) both;
+}
+html[data-material='off'] .login-card {
+  background: var(--solid-bg-2);
+}
+.login-logo {
+  width: 64px;
+  height: 64px;
+  animation: pop-in 700ms var(--ease-enter) 120ms both;
+}
+.login-steps {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--text-2);
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.login-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+.copy-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ─── Diversos ───────────────────────────────────────────────────────────────────────────── */
+.row-gap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.spinner-center {
+  display: grid;
+  place-items: center;
+  padding: 64px 0;
+}
+.load-more {
+  display: grid;
+  place-items: center;
+  padding: 20px 0 0;
+}
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Campo de busca/entrada no estilo TextBox do Windows 11 */
+:root[data-theme='dark'] {
+  --input-active: rgba(30, 30, 30, 0.7);
+}
+:root[data-theme='light'] {
+  --input-active: #ffffff;
+}
+.searchbox.fui-SearchBox,
+.win-input.fui-Input {
+  background: var(--control);
+  border-color: var(--stroke-control);
+  border-bottom-color: var(--control-strong);
+  transition: background var(--dur-fast) var(--ease-std);
+}
+.searchbox.fui-SearchBox:hover,
+.win-input.fui-Input:hover {
+  background: var(--control-hover);
+}
+.searchbox.fui-SearchBox:focus-within,
+.win-input.fui-Input:focus-within {
+  background: var(--input-active);
+}
+
+.liked-art {
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border-radius: var(--radius-overlay);
+  background:
+    radial-gradient(120% 120% at 0% 0%, var(--accent-base), transparent 60%),
+    linear-gradient(135deg, #4b2bd6, #b6359a 60%, #e85d75);
+}
+.card .liked-art {
+  width: 100% !important;
+  height: 100% !important;
+  box-shadow: none;
+  border-radius: var(--radius-control);
+}

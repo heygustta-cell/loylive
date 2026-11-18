@@ -1,0 +1,32 @@
+# Empacotamento para Windows (instalador NSIS) usando o Electron da castLabs já instalado em node_modules.
+appId: com.sonora.player
+productName: Sonora
+copyright: Sonora
+directories:
+  output: dist
+  buildResources: build
+# Usa o binário castLabs (com Widevine) baixado pelo "npm install" — não baixa o Electron oficial.
+electronDist: node_modules/electron/dist
+files:
+  - out/**
+  - resources/**
+  - package.json
+asarUnpack:
+  - resources/**
+# Assinatura VMP (castLabs EVS). No Windows ela deve vir DEPOIS da assinatura de código (Authenticode):
+# sem certificado ela roda no afterPack; com certificado (CSC_LINK), no afterSign. Veja scripts/evs-sign.cjs.
+afterPack: scripts/vmp-after-pack.cjs
+afterSign: scripts/vmp-after-sign.cjs
+publish: null
+win:
+  icon: build/icon.ico
+  target:
+    - target: nsis
+      arch: [x64]
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  shortcutName: Sonora
+  artifactName: Sonora-Setup-${version}.${ext}

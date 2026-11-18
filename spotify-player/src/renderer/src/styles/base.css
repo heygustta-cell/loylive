@@ -1,0 +1,464 @@
+/* ──────────────────────────────────────────────────────────────────────────────────────────
+   Tokens do Windows 11 (WinUI 3) — valores de cor oficiais para tema escuro e claro.
+   ────────────────────────────────────────────────────────────────────────────────────────── */
+:root {
+  --font-text: 'Segoe UI Variable Text', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-display: 'Segoe UI Variable Display', 'Segoe UI Variable', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-small: 'Segoe UI Variable Small', 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif;
+
+  /* Curvas de animação do Fluent */
+  --ease-enter: cubic-bezier(0.1, 0.9, 0.2, 1); /* desacelerar (entrada) */
+  --ease-p2p: cubic-bezier(0.55, 0.55, 0, 1); /* ponto a ponto */
+  --ease-exit: cubic-bezier(0.7, 0, 1, 0.5); /* acelerar (saída) */
+  --ease-std: cubic-bezier(0.33, 0, 0.67, 1);
+  --dur-fast: 167ms;
+  --dur-normal: 250ms;
+  --dur-slow: 400ms;
+
+  --radius-control: 4px;
+  --radius-overlay: 8px;
+  --radius-card: 8px;
+
+  --titlebar-h: 48px;
+  --nav-w-expanded: 288px;
+  --nav-w-compact: 56px;
+  --player-h: 92px;
+
+  --accent-fill: #005fb8;
+  --accent-text: #003e92;
+  --accent-on-fill: #fff;
+  --accent-soft: rgba(0, 95, 184, 0.12);
+}
+
+:root[data-theme='dark'] {
+  --text-1: #ffffff;
+  --text-2: rgba(255, 255, 255, 0.786);
+  --text-3: rgba(255, 255, 255, 0.544);
+  --text-disabled: rgba(255, 255, 255, 0.3628);
+
+  --layer: rgba(58, 58, 58, 0.3);
+  --layer-alt: rgba(255, 255, 255, 0.0538);
+  --card: rgba(255, 255, 255, 0.0512);
+  --card-2: rgba(255, 255, 255, 0.0326);
+  --control: rgba(255, 255, 255, 0.0605);
+  --control-hover: rgba(255, 255, 255, 0.0837);
+  --control-pressed: rgba(255, 255, 255, 0.0326);
+  --subtle-hover: rgba(255, 255, 255, 0.0605);
+  --subtle-pressed: rgba(255, 255, 255, 0.0419);
+  --control-strong: rgba(255, 255, 255, 0.5442);
+  --control-strong-disabled: rgba(255, 255, 255, 0.1581);
+
+  --stroke-card: rgba(0, 0, 0, 0.1);
+  --stroke-layer: rgba(255, 255, 255, 0.0698);
+  --stroke-control: rgba(255, 255, 255, 0.0698);
+  --stroke-control-2: rgba(255, 255, 255, 0.093);
+  --stroke-divider: rgba(255, 255, 255, 0.0837);
+  --stroke-surface: rgba(117, 117, 117, 0.4);
+  --stroke-flyout: rgba(0, 0, 0, 0.2);
+
+  --acrylic: rgba(32, 32, 32, 0.72);
+  --acrylic-strong: rgba(44, 44, 44, 0.86);
+  --solid-bg: #202020;
+  --solid-bg-2: #1c1c1c;
+  --smoke: rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.26);
+  --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.26);
+  --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.37), 0 2px 21px rgba(0, 0, 0, 0.37);
+  --tint-opacity: 0.42;
+  --skeleton: rgba(255, 255, 255, 0.06);
+  --skeleton-shine: rgba(255, 255, 255, 0.06);
+}
+
+:root[data-theme='light'] {
+  --text-1: rgba(0, 0, 0, 0.8956);
+  --text-2: rgba(0, 0, 0, 0.6063);
+  --text-3: rgba(0, 0, 0, 0.4458);
+  --text-disabled: rgba(0, 0, 0, 0.3614);
+
+  --layer: rgba(255, 255, 255, 0.5);
+  --layer-alt: rgba(255, 255, 255, 0.7);
+  --card: rgba(255, 255, 255, 0.7);
+  --card-2: rgba(246, 246, 246, 0.5);
+  --control: rgba(255, 255, 255, 0.7);
+  --control-hover: rgba(249, 249, 249, 0.5);
+  --control-pressed: rgba(249, 249, 249, 0.3);
+  --subtle-hover: rgba(0, 0, 0, 0.0373);
+  --subtle-pressed: rgba(0, 0, 0, 0.0241);
+  --control-strong: rgba(0, 0, 0, 0.4458);
+  --control-strong-disabled: rgba(0, 0, 0, 0.3173);
+
+  --stroke-card: rgba(0, 0, 0, 0.0578);
+  --stroke-layer: rgba(0, 0, 0, 0.0578);
+  --stroke-control: rgba(0, 0, 0, 0.0578);
+  --stroke-control-2: rgba(0, 0, 0, 0.1622);
+  --stroke-divider: rgba(0, 0, 0, 0.0803);
+  --stroke-surface: rgba(117, 117, 117, 0.4);
+  --stroke-flyout: rgba(0, 0, 0, 0.0578);
+
+  --acrylic: rgba(252, 252, 252, 0.72);
+  --acrylic-strong: rgba(249, 249, 249, 0.88);
+  --solid-bg: #f3f3f3;
+  --solid-bg-2: #eeeeee;
+  --smoke: rgba(0, 0, 0, 0.3);
+  --shadow-card: 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-flyout: 0 8px 16px rgba(0, 0, 0, 0.14);
+  --shadow-dialog: 0 32px 64px rgba(0, 0, 0, 0.1876), 0 2px 21px rgba(0, 0, 0, 0.1474);
+  --tint-opacity: 0.3;
+  --skeleton: rgba(0, 0, 0, 0.06);
+  --skeleton-shine: rgba(255, 255, 255, 0.5);
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Com Mica/Acrylic o fundo é transparente; sem suporte (Win10/Linux/macOS), um fundo sólido. */
+html {
+  background: transparent;
+}
+html[data-material='off'] body {
+  background: var(--solid-bg);
+}
+
+body {
+  font-family: var(--font-text);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--text-1);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  user-select: none;
+  cursor: default;
+  overscroll-behavior: none;
+}
+
+.fluent-root {
+  height: 100%;
+  background: transparent !important;
+  color: var(--text-1);
+  font-family: var(--font-text);
+}
+
+img {
+  -webkit-user-drag: none;
+}
+
+button {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+}
+
+::selection {
+  background: var(--accent-fill);
+  color: var(--accent-on-fill);
+}
+
+input,
+textarea,
+[contenteditable] {
+  user-select: text;
+  cursor: text;
+}
+
+:focus-visible {
+  outline: 2px solid var(--text-1);
+  outline-offset: 1px;
+  border-radius: var(--radius-control);
+}
+
+/* ─── Tipografia (rampa do Windows 11) ───────────────────────────────────────────────────── */
+.t-caption {
+  font-size: 12px;
+  line-height: 16px;
+}
+.t-body {
+  font-size: 14px;
+  line-height: 20px;
+}
+.t-body-strong {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 600;
+}
+.t-body-large {
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 24px;
+}
+.t-subtitle {
+  font-family: var(--font-display);
+  font-size: 20px;
+  line-height: 28px;
+  font-weight: 600;
+}
+.t-title {
+  font-family: var(--font-display);
+  font-size: 28px;
+  line-height: 36px;
+  font-weight: 600;
+}
+.t-title-large {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 52px;
+  font-weight: 600;
+}
+.t-display {
+  font-family: var(--font-display);
+  font-size: 68px;
+  line-height: 92px;
+  font-weight: 600;
+}
+.text-2 {
+  color: var(--text-2);
+}
+.text-3 {
+  color: var(--text-3);
+}
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+.clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+.link:hover {
+  text-decoration: underline;
+  color: var(--text-1);
+}
+
+/* ─── Animações (somente transform/opacity → compositor/GPU) ─────────────────────────────── */
+@keyframes fluent-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fluent-drill-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fluent-back {
+  from {
+    opacity: 0;
+    transform: translate3d(-24px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes shimmer {
+  from {
+    transform: translate3d(-100%, 0, 0);
+  }
+  to {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes eq {
+  0%,
+  100% {
+    transform: scaleY(0.25);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+@keyframes drift {
+  0% {
+    transform: scale(1.35) translate3d(-2%, -1%, 0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1.5) translate3d(2%, 2%, 0) rotate(4deg);
+  }
+  100% {
+    transform: scale(1.35) translate3d(-2%, -1%, 0) rotate(0deg);
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+  50% {
+    transform: scale(1.12) translate3d(1.5%, -1%, 0);
+  }
+}
+
+.enter {
+  animation: fluent-enter 420ms var(--ease-enter) both;
+}
+.stagger > * {
+  animation: rise-in 420ms var(--ease-enter) both;
+  animation-delay: calc(min(var(--i, 0), 14) * 22ms);
+}
+
+html[data-reduce-motion='on'] *,
+html[data-reduce-motion='on'] *::before,
+html[data-reduce-motion='on'] *::after {
+  animation-duration: 1ms !important;
+  animation-delay: 0ms !important;
+  transition-duration: 1ms !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
+}
+
+/* ─── Efeito Reveal (brilho que segue o cursor) ──────────────────────────────────────────── */
+.reveal {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+.reveal::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 260px;
+  height: 260px;
+  margin: -130px 0 0 -130px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--reveal-color, rgba(255, 255, 255, 0.1)), transparent);
+  transform: translate3d(var(--rx, -999px), var(--ry, -999px), 0);
+  opacity: 0;
+  transition: opacity var(--dur-normal) var(--ease-std);
+  pointer-events: none;
+  z-index: -1;
+}
+:root[data-theme='light'] .reveal::after {
+  --reveal-color: rgba(255, 255, 255, 0.75);
+}
+.reveal.reveal-on::after {
+  opacity: 1;
+}
+
+/* ─── Skeleton (carregamento) ────────────────────────────────────────────────────────────── */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: var(--skeleton);
+  border-radius: var(--radius-control);
+}
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--skeleton-shine), transparent);
+  animation: shimmer 1.4s var(--ease-std) infinite;
+}
+
+/* ─── Fluent: popovers/menus com acrílico ────────────────────────────────────────────────── */
+.fui-MenuPopover,
+.fui-PopoverSurface,
+.fui-Listbox {
+  background: var(--acrylic-strong) !important;
+  backdrop-filter: blur(30px) saturate(150%);
+  border: 1px solid var(--stroke-surface) !important;
+  box-shadow: var(--shadow-flyout) !important;
+  border-radius: var(--radius-overlay) !important;
+  /* Sem animação de transform aqui: o Fluent posiciona o popover com transform. */
+}
+.fui-MenuItem {
+  border-radius: var(--radius-control);
+}
+.fui-Toast {
+  background: var(--acrylic-strong) !important;
+  backdrop-filter: blur(30px) saturate(150%);
+  border: 1px solid var(--stroke-surface);
+  box-shadow: var(--shadow-flyout) !important;
+}
+.fui-DialogSurface {
+  background: var(--solid-bg) !important;
+  border: 1px solid var(--stroke-surface) !important;
+  box-shadow: var(--shadow-dialog) !important;
+}
