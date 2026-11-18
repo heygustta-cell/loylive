@@ -12,6 +12,8 @@ interface Props {
   onChange?: (v: number) => void
   onCommit?: (v: number) => void
   format?: (v: number) => string
+  /** "media": trilha fina que engrossa no hover, bolinha só no hover e prévia do tempo sob o cursor. */
+  variant?: 'default' | 'media'
   step?: number
   disabled?: boolean
   label: string
@@ -22,17 +24,41 @@ interface Props {
  * Slider no estilo do Windows 11. A posição é aplicada direto no DOM via transform
  * (scaleX na trilha, translateX no "thumb"), sem re-render do React — fluido em 144 Hz.
  */
-export function Slider({ max, value, source, live = false, onChange, onCommit, format, step, disabled, label, className }: Props) {
+export function Slider({
+  max,
+  value,
+  source,
+  live = false,
+  onChange,
+  onCommit,
+  format,
+  variant = 'default',
+  step,
+  disabled,
+  label,
+  className
+}: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const fillRef = useRef<HTMLDivElement>(null)
   const thumbRef = useRef<HTMLDivElement>(null)
   const tipRef = useRef<HTMLDivElement>(null)
+  const hoverRef = useRef<HTMLDivElement>(null)
   const widthRef = useRef(0)
   const dragRef = useRef<number | null>(null)
   const lastFrac = useRef(-1)
   const [dragging, setDragging] = useState(false)
   const latest = useRef({ value, source })
   latest.current = { value, source }
+
+  const setTip = useCallback(
+    (v: number, x: number) => {
+      const tip = tipRef.current
+      if (!tip) return
+      tip.style.transform = `translate3d(calc(${x}px - 50%), 0, 0)`
+      tip.textContent = format ? format(v) : String(Math.round(v))
+    },
+    [format]
+  )
 
   const paint = useCallback(
     (v: number, force = false) => {
@@ -42,13 +68,10 @@ export function Slider({ max, value, source, live = false, onChange, onCommit, f
       const w = widthRef.current
       if (fillRef.current) fillRef.current.style.transform = `scaleX(${frac})`
       if (thumbRef.current) thumbRef.current.style.transform = `translate3d(${frac * w}px,0,0)`
-      if (tipRef.current && dragRef.current !== null) {
-        tipRef.current.style.left = `${frac * w}px`
-        tipRef.current.textContent = format ? format(v) : String(Math.round(v))
-      }
+      if (dragRef.current !== null) setTip(v, frac * w)
       rootRef.current?.setAttribute('aria-valuenow', String(Math.round(v)))
     },
-    [max, format]
+    [max, setTip]
   )
 
   // Mede a largura uma vez e quando o tamanho muda (evita layout a cada quadro).
@@ -77,24 +100,31 @@ export function Slider({ max, value, source, live = false, onChange, onCommit, f
     if (!live && source && dragRef.current === null) paint(source(), true)
   })
 
-  const valueFromX = (clientX: number): number => {
+  const fracFromX = (clientX: number): number => {
     const rect = rootRef.current!.getBoundingClientRect()
-    const frac = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width))
-    return frac * max
+    return Math.min(1, Math.max(0, (clientX - rect.left) / rect.width))
   }
 
   const onPointerDown = (e: React.PointerEvent): void => {
     if (disabled || e.button !== 0) return
     e.currentTarget.setPointerCapture(e.pointerId)
-    const v = valueFromX(e.clientX)
+    const v = fracFromX(e.clientX) * max
     dragRef.current = v
     setDragging(true)
     paint(v, true)
     onChange?.(v)
   }
   const onPointerMove = (e: React.PointerEvent): void => {
-    if (dragRef.current === null) return
-    const v = valueFromX(e.clientX)
+    const frac = fracFromX(e.clientX)
+    if (dragRef.current === null) {
+      // Prévia do tempo sob o cursor (variante de mídia).
+      if (variant === 'media' && !disabled) {
+        setTip(frac * max, frac * widthRef.current)
+        if (hoverRef.current) hoverRef.current.style.transform = `scaleX(${frac})`
+      }
+      return
+    }
+    const v = frac * max
     dragRef.current = v
     paint(v)
     onChange?.(v)
@@ -129,7 +159,7 @@ export function Slider({ max, value, source, live = false, onChange, onCommit, f
   return (
     <div
       ref={rootRef}
-      className={`slider${className ? ` ${className}` : ''}`}
+      className={`slider${variant === 'media' ? ' media' : ''}${className ? ` ${className}` : ''}`}
       role="slider"
       tabIndex={disabled ? -1 : 0}
       aria-label={label}
@@ -144,6 +174,7 @@ export function Slider({ max, value, source, live = false, onChange, onCommit, f
       onKeyDown={onKeyDown}
     >
       <div className="slider-track">
+        {variant === 'media' && <div ref={hoverRef} className="slider-hover" />}
         <div ref={fillRef} className="slider-fill" />
       </div>
       <div ref={thumbRef} className="slider-thumb" />

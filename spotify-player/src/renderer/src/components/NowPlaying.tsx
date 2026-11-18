@@ -3,6 +3,7 @@ import {
   ChevronDownRegular,
   FullScreenMaximizeRegular,
   FullScreenMinimizeRegular,
+  PictureInPictureEnterRegular,
   TextBulletListLtrRegular
 } from '@fluentui/react-icons'
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
@@ -11,6 +12,7 @@ import { openUri } from '@/state/nav'
 import { useUi } from '@/state/ui'
 import { useSettings } from '@/state/settings'
 import { buildFluentTheme } from '@/theme/fluentTheme'
+import { rgba } from '@/theme/colors'
 import { pickImage } from '@/spotify/api'
 import { playSafe, usePlayer, type PlayerTrack } from '@/spotify/player'
 import { useQueue } from '@/spotify/queries'
@@ -20,19 +22,28 @@ import { SeekBar, TransportControls, VolumeControl } from './PlayerControls'
 
 interface BgLayer {
   id: number
-  src: string
+  src: string | null
+  colors: [string, string, string, string]
   visible: boolean
 }
 let bgSeq = 0
 
 /** Fundo com a capa desfocada (pré-renderizada) + crossfade entre faixas. */
+/**
+ * Fundo "vivo": a capa desfocada (pré-renderizada) + quatro manchas de cor da paleta que se movem
+ * devagar (gradiente em malha). Tudo animado só com transform → GPU. Troca de faixa = crossfade.
+ */
 function Backdrop() {
-  const backdrop = usePalette((s) => s.palette?.backdrop ?? null)
+  const palette = usePalette((s) => s.palette)
   const [layers, setLayers] = useState<BgLayer[]>([])
   useEffect(() => {
-    if (!backdrop) return
+    if (!palette) return
     const id = ++bgSeq
-    setLayers((prev) => [...prev.map((l) => ({ ...l, visible: false })), { id, src: backdrop, visible: false }].slice(-3))
+    const [a, b, c] = palette.colors
+    const colors: BgLayer['colors'] = [rgba(palette.glow, 0.9), rgba(a, 0.85), rgba(b, 0.8), rgba(c, 0.75)]
+    setLayers((prev) =>
+      [...prev.map((l) => ({ ...l, visible: false })), { id, src: palette.backdrop, colors, visible: false }].slice(-3)
+    )
     let r2 = 0
     const r1 = requestAnimationFrame(() => {
       r2 = requestAnimationFrame(() => setLayers((p) => p.map((l) => (l.id === id ? { ...l, visible: true } : l))))
@@ -43,12 +54,17 @@ function Backdrop() {
       cancelAnimationFrame(r2)
       clearTimeout(t)
     }
-  }, [backdrop])
+  }, [palette])
   return (
     <div className="np-bg" aria-hidden="true">
       {layers.map((l) => (
         <div key={l.id} className={`np-bg-layer${l.visible ? ' visible' : ''}`}>
-          <img src={l.src} alt="" />
+          {l.src && <img src={l.src} alt="" />}
+          <div className="mesh">
+            {l.colors.map((c, i) => (
+              <span key={i} className={`blob blob-${i}`} style={{ background: `radial-gradient(closest-side, ${c}, transparent)` }} />
+            ))}
+          </div>
         </div>
       ))}
       <div className="np-scrim" />
@@ -123,8 +139,10 @@ export function NowPlaying() {
   const open = useUi((s) => s.nowPlayingOpen)
   const fullscreen = useUi((s) => s.fullscreen)
   const setNowPlaying = useUi((s) => s.setNowPlaying)
+  const setMini = useUi((s) => s.setMini)
   const track = usePlayer((s) => s.track)
   const contextName = usePlayer((s) => s.contextName)
+  const paused = usePlayer((s) => s.paused || !s.active)
   const accent = useSettings((s) => s.system.accent)
   const [mounted, setMounted] = useState(open)
   const [closing, setClosing] = useState(false)
@@ -195,7 +213,8 @@ export function NowPlaying() {
         </div>
 
         <div className="np-body" data-queue={showQueue ? 'true' : 'false'}>
-          <div className="np-art-wrap">
+          <div className="np-art-wrap" data-paused={paused ? 'true' : 'false'}>
+            <div className="np-art-glow" aria-hidden="true" />
             {art && (
               <img
                 key={track.album.uri}
@@ -257,6 +276,11 @@ export function NowPlaying() {
                 </button>
               </Tooltip>
               <VolumeControl />
+              <Tooltip content="Mini player" relationship="label" withArrow>
+                <button className="ctl ctl-sm" onClick={() => setMini(true)}>
+                  <PictureInPictureEnterRegular />
+                </button>
+              </Tooltip>
               <Tooltip content={fullscreen ? 'Sair da tela cheia' : 'Tela cheia'} relationship="label" withArrow>
                 <button className="ctl ctl-sm" onClick={() => window.sonora.window.toggleFullscreen()}>
                   {fullscreen ? <FullScreenMinimizeRegular /> : <FullScreenMaximizeRegular />}

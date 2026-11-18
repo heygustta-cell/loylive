@@ -7,13 +7,20 @@ import {
   MessageBarBody,
   Spinner
 } from '@fluentui/react-components'
-import { CopyRegular, GlobeRegular, OpenRegular } from '@fluentui/react-icons'
+import {
+  CopyRegular,
+  GlobeRegular,
+  HeadphonesRegular,
+  OpenRegular,
+  SparkleRegular,
+  WindowRegular
+} from '@fluentui/react-icons'
 import { useState } from 'react'
 import type { AuthState, LoginMode } from '@shared/types'
 import { notify } from '@/lib/notify'
 import { useSettings } from '@/state/settings'
 import { AppLogo } from '@/components/AppLogo'
-import { TintLayer } from '@/components/TintLayer'
+import { Aurora } from '@/components/Aurora'
 
 export function LoginPage({ auth }: { auth: AuthState }) {
   const update = useSettings((s) => s.update)
@@ -36,21 +43,32 @@ export function LoginPage({ auth }: { auth: AuthState }) {
 
   return (
     <>
-      <TintLayer />
+      <Aurora />
       <div className="login-drag">
         <AppLogo size={18} />
         <span>Sonora</span>
       </div>
       <main className="login">
         <div className="login-card">
-          <AppLogo size={64} className="login-logo" />
+          <div className="login-logo-wrap">
+            <AppLogo size={72} className="login-logo" />
+          </div>
           <div>
-            <h1 className="t-title" style={{ margin: 0 }}>
-              Bem-vindo ao Sonora
-            </h1>
-            <p className="text-2" style={{ margin: '4px 0 0' }}>
-              Suas músicas do Spotify num player nativo do Windows 11. Requer Spotify Premium.
+            <h1 className="login-title display">Sua música, do jeito do Windows.</h1>
+            <p className="text-2" style={{ margin: '8px 0 0' }}>
+              O Sonora toca o seu Spotify direto no PC, com o visual e a fluidez do Windows 11.
             </p>
+          </div>
+          <div className="login-features">
+            <span>
+              <HeadphonesRegular /> Toca sem o app oficial
+            </span>
+            <span>
+              <WindowRegular /> Mica e cores da capa
+            </span>
+            <span>
+              <SparkleRegular /> Feito para 144 Hz
+            </span>
           </div>
 
           {!auth.hasClientId ? (

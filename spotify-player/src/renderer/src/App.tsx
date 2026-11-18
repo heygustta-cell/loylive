@@ -6,6 +6,7 @@ import { goBack, navigate, routeKey, scrollPositions, useNav, type Route } from 
 import { useSettings } from '@/state/settings'
 import { useUi } from '@/state/ui'
 import { pickImage } from '@/spotify/api'
+import { rgba } from '@/theme/colors'
 import {
   initPlayer,
   nextTrack,
@@ -15,6 +16,7 @@ import {
   usePlayer
 } from '@/spotify/player'
 import { NavPane } from '@/components/NavPane'
+import { MiniPlayer } from '@/components/MiniPlayer'
 import { NowPlaying } from '@/components/NowPlaying'
 import { Notifier } from '@/components/Notifier'
 import { PlayerBar } from '@/components/PlayerBar'
@@ -81,7 +83,13 @@ function usePaletteFollower(): void {
       if (!url || url === lastUrl) return
       lastUrl = url
       void extractPalette(url).then((palette) => {
-        if (palette && lastUrl === url) usePalette.setState({ palette })
+        if (!palette || lastUrl !== url) return
+        usePalette.setState({ palette })
+        // Cores da música atual para o dock, o mini player etc. (transições via @property no CSS).
+        const root = document.documentElement.style
+        root.setProperty('--np-c1', rgba(palette.colors[0], 1))
+        root.setProperty('--np-c2', rgba(palette.colors[1], 1))
+        root.setProperty('--np-glow', rgba(palette.glow, 1))
       })
     }
     run(usePlayer.getState().track?.album.images)
@@ -144,6 +152,7 @@ function Shell() {
   const navCollapsed = useSettings((s) => s.settings.navCollapsed)
   const narrow = useMediaQuery('(max-width: 1080px)')
   const nowPlayingOpen = useUi((s) => s.nowPlayingOpen)
+  const mini = useUi((s) => s.mini)
   const compact = navCollapsed || narrow
   const [scrollEl, setScrollEl] = useState<HTMLDivElement | null>(null)
   const key = routeKey(current)
@@ -165,6 +174,15 @@ function Shell() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key, scrollEl])
 
+  if (mini) {
+    return (
+      <>
+        <MiniPlayer />
+        <Notifier />
+      </>
+    )
+  }
+
   return (
     <ScrollContext.Provider value={scrollEl}>
       <div className="app" data-nav={compact ? 'compact' : 'expanded'} aria-hidden={nowPlayingOpen || undefined}>
@@ -182,6 +200,7 @@ function Shell() {
               <RouteView route={current} compactNav={compact} />
             </div>
           </div>
+          <div id="content-overlay" className="content-overlay" />
         </main>
         <PlayerBar />
       </div>

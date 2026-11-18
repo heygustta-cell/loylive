@@ -21,6 +21,8 @@ export const IPC = {
   windowMaximized: 'window:maximized',
   windowFullscreen: 'window:fullscreen',
   windowToggleFullscreen: 'window:toggle-fullscreen',
+  windowMini: 'window:mini',
+  windowMiniChanged: 'window:mini-changed',
 
   openExternal: 'shell:open-external'
 } as const

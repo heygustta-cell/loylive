@@ -51,6 +51,8 @@ const api: SonoraApi = {
   window: {
     setOverlayTone: (tone: OverlayTone): void => ipcRenderer.send(IPC.windowOverlayTone, tone),
     toggleFullscreen: (): void => ipcRenderer.send(IPC.windowToggleFullscreen),
+    setMini: (on: boolean): void => ipcRenderer.send(IPC.windowMini, on),
+    onMini: (cb: (on: boolean) => void) => on(IPC.windowMiniChanged, cb),
     onFullscreen: (cb: (v: boolean) => void) => on(IPC.windowFullscreen, cb),
     onMaximized: (cb: (v: boolean) => void) => on(IPC.windowMaximized, cb)
   },

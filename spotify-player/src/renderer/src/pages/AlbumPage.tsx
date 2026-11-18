@@ -37,7 +37,7 @@ export function AlbumPage({ id }: { id: string }) {
             {album?.artists.map((a, i) => (
               <Fragment key={a.uri || i}>
                 {i > 0 && ', '}
-                <button className="link" style={{ fontWeight: 600, color: 'var(--text-1)' }} onClick={() => openUri(a.uri)}>
+                <button className="link hero2-strong" onClick={() => openUri(a.uri)}>
                   {a.name}
                 </button>
               </Fragment>
@@ -47,6 +47,8 @@ export function AlbumPage({ id }: { id: string }) {
           plural(album?.total_tracks ?? tracks.length, 'música', 'músicas'),
           duration ? formatLongDuration(duration) : ''
         ].filter(Boolean)}
+        contextUri={uri}
+        shareUrl={`https://open.spotify.com/album/${id}`}
         onPlay={tracks.length ? () => playSafe({ contextUri: uri }) : undefined}
         onShuffle={tracks.length ? () => void shuffleContext(uri, tracks.length, tracks.map((t) => t.uri)) : undefined}
       />

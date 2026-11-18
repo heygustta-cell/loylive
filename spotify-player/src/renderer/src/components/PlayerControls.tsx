@@ -42,7 +42,11 @@ export function TimeLabel({ className }: { className?: string }) {
       ref.current.textContent = t
     }
   })
-  return <span ref={ref} className={className}>{formatTime(currentPosition())}</span>
+  return (
+    <span ref={ref} className={className}>
+      {formatTime(currentPosition())}
+    </span>
+  )
 }
 
 /** Barra de progresso da faixa (busca). */
@@ -55,9 +59,10 @@ export function SeekBar({ className }: { className?: string }) {
   usePlayer((s) => s.updatedAt)
   return (
     <div className={className}>
-      <TimeLabel />
+      <TimeLabel className="time-left" />
       <Slider
         label="Posição da música"
+        variant="media"
         max={Math.max(1, duration)}
         source={currentPosition}
         live={live}
@@ -68,6 +73,52 @@ export function SeekBar({ className }: { className?: string }) {
       />
       <span className="time-right">{formatTime(duration)}</span>
     </div>
+  )
+}
+
+/** Ícones de play/pause sobrepostos que se transformam um no outro (mola). */
+export function PlayPauseIcon({ paused, size }: { paused: boolean; size: number }) {
+  return (
+    <span className="pp" data-paused={paused ? 'true' : 'false'} aria-hidden="true">
+      <PlayFilled className="pp-play" fontSize={size} />
+      <PauseFilled className="pp-pause" fontSize={size} />
+    </span>
+  )
+}
+
+/**
+ * Botão de play de uma coleção (playlist/álbum/artista). Se aquele contexto já estiver tocando,
+ * vira "pausar" — o mesmo comportamento dos players premium.
+ */
+export function ContextPlayButton({
+  contextUri,
+  onPlay,
+  size = 'lg',
+  label = 'Reproduzir'
+}: {
+  contextUri?: string | null
+  onPlay: () => void
+  size?: 'sm' | 'md' | 'lg'
+  label?: string
+}) {
+  const isCurrent = usePlayer((s) => Boolean(contextUri) && s.active && s.contextUri === contextUri)
+  const paused = usePlayer((s) => s.paused)
+  const playing = isCurrent && !paused
+  const px = size === 'lg' ? 26 : size === 'md' ? 22 : 18
+  return (
+    <Tooltip content={playing ? 'Pausar' : label} relationship="label" withArrow>
+      <button
+        className={`big-play big-play-${size}`}
+        data-playing={playing ? 'true' : 'false'}
+        onClick={(e) => {
+          e.stopPropagation()
+          if (isCurrent) void togglePlay()
+          else onPlay()
+        }}
+      >
+        <PlayPauseIcon paused={!playing} size={px} />
+      </button>
+    </Tooltip>
   )
 }
 
@@ -88,19 +139,17 @@ export function TransportControls({ size = 'md' }: { size?: 'md' | 'lg' }) {
         </button>
       </Tooltip>
       <Tooltip content="Anterior (Ctrl+←)" relationship="label" withArrow>
-        <button className="ctl" onClick={() => void previousTrack()} disabled={!ready}>
+        <button className="ctl ctl-skip" data-dir="prev" onClick={() => void previousTrack()} disabled={!ready}>
           <PreviousFilled fontSize={iconSize} />
         </button>
       </Tooltip>
       <Tooltip content={paused ? 'Reproduzir (Espaço)' : 'Pausar (Espaço)'} relationship="label" withArrow>
         <button className="ctl ctl-play" data-busy={busy ? 'true' : 'false'} onClick={() => void togglePlay()} disabled={!ready}>
-          <span key={paused ? 'play' : 'pause'} className="icon-swap">
-            {paused ? <PlayFilled fontSize={iconSize + 2} /> : <PauseFilled fontSize={iconSize + 2} />}
-          </span>
+          <PlayPauseIcon paused={paused} size={iconSize + 2} />
         </button>
       </Tooltip>
       <Tooltip content="Próxima (Ctrl+→)" relationship="label" withArrow>
-        <button className="ctl" onClick={() => void nextTrack()} disabled={!ready || d.skipping_next}>
+        <button className="ctl ctl-skip" data-dir="next" onClick={() => void nextTrack()} disabled={!ready || d.skipping_next}>
           <NextFilled fontSize={iconSize} />
         </button>
       </Tooltip>
@@ -131,10 +180,11 @@ export function VolumeControl() {
       </Tooltip>
       <Slider
         label="Volume"
+        variant="media"
         max={100}
         value={Math.round(effective * 100)}
         step={5}
-        format={(v) => `${Math.round(v)}`}
+        format={(v) => `${Math.round(v)}%`}
         onChange={(v) => setVolume(v / 100)}
       />
     </div>

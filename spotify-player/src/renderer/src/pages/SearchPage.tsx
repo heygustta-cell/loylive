@@ -108,7 +108,7 @@ export function SearchPage({ q, compactNav }: { q: string; compactNav: boolean }
                 <Shelf title="Artistas">
                   {r.artists.map((a, i) => (
                     <MediaCard key={a.uri} index={i} round title={a.name} subtitle="Artista" images={a.images}
-                      onOpen={() => a.id && navigate({ name: 'artist', id: a.id })} onPlay={() => playSafe({ contextUri: a.uri })} />
+                      onOpen={() => a.id && navigate({ name: 'artist', id: a.id })} contextUri={a.uri} onPlay={() => playSafe({ contextUri: a.uri })} />
                   ))}
                 </Shelf>
               )}
@@ -118,7 +118,7 @@ export function SearchPage({ q, compactNav }: { q: string; compactNav: boolean }
                     <MediaCard key={a.uri} index={i} title={a.name}
                       subtitle={[a.artists.map((x) => x.name).join(', '), year(a.release_date)].filter(Boolean).join(' • ')}
                       images={a.images} onOpen={() => a.id && navigate({ name: 'album', id: a.id })}
-                      onPlay={() => playSafe({ contextUri: a.uri })} />
+                      contextUri={a.uri} onPlay={() => playSafe({ contextUri: a.uri })} />
                   ))}
                 </Shelf>
               )}
@@ -126,7 +126,7 @@ export function SearchPage({ q, compactNav }: { q: string; compactNav: boolean }
                 <Shelf title="Playlists">
                   {r.playlists.map((p, i) => (
                     <MediaCard key={p.id} index={i} title={p.name} subtitle={p.owner.display_name ?? undefined} images={p.images}
-                      onOpen={() => navigate({ name: 'playlist', id: p.id })} onPlay={() => playSafe({ contextUri: p.uri })} />
+                      onOpen={() => navigate({ name: 'playlist', id: p.id })} contextUri={p.uri} onPlay={() => playSafe({ contextUri: p.uri })} />
                   ))}
                 </Shelf>
               )}
@@ -142,7 +142,7 @@ export function SearchPage({ q, compactNav }: { q: string; compactNav: boolean }
             <CardGrid>
               {r.artists.map((a, i) => (
                 <MediaCard key={a.uri} index={i} round title={a.name} subtitle="Artista" images={a.images}
-                  onOpen={() => a.id && navigate({ name: 'artist', id: a.id })} onPlay={() => playSafe({ contextUri: a.uri })} />
+                  onOpen={() => a.id && navigate({ name: 'artist', id: a.id })} contextUri={a.uri} onPlay={() => playSafe({ contextUri: a.uri })} />
               ))}
             </CardGrid>
           )}
@@ -152,7 +152,7 @@ export function SearchPage({ q, compactNav }: { q: string; compactNav: boolean }
                 <MediaCard key={a.uri} index={i} title={a.name}
                   subtitle={[albumType(a.album_type), a.artists.map((x) => x.name).join(', ')].join(' • ')}
                   images={a.images} onOpen={() => a.id && navigate({ name: 'album', id: a.id })}
-                  onPlay={() => playSafe({ contextUri: a.uri })} />
+                  contextUri={a.uri} onPlay={() => playSafe({ contextUri: a.uri })} />
               ))}
             </CardGrid>
           )}
@@ -160,7 +160,7 @@ export function SearchPage({ q, compactNav }: { q: string; compactNav: boolean }
             <CardGrid>
               {r.playlists.map((p, i) => (
                 <MediaCard key={p.id} index={i} title={p.name} subtitle={p.owner.display_name ?? undefined} images={p.images}
-                  onOpen={() => navigate({ name: 'playlist', id: p.id })} onPlay={() => playSafe({ contextUri: p.uri })} />
+                  onOpen={() => navigate({ name: 'playlist', id: p.id })} contextUri={p.uri} onPlay={() => playSafe({ contextUri: p.uri })} />
               ))}
             </CardGrid>
           )}

@@ -38,7 +38,7 @@ export function PlaylistsPage() {
               subtitle={[p.owner.display_name, plural(p.total, 'música', 'músicas')].filter(Boolean).join(' • ')}
               images={p.images}
               onOpen={() => navigate({ name: 'playlist', id: p.id })}
-              onPlay={() => playSafe({ contextUri: p.uri })}
+              contextUri={p.uri} onPlay={() => playSafe({ contextUri: p.uri })}
             />
           ))}
         </CardGrid>

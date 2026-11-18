@@ -46,7 +46,7 @@ export function AlbumsPage() {
               subtitle={[a.artists.map((x) => x.name).join(', '), year(a.release_date)].filter(Boolean).join(' • ')}
               images={a.images}
               onOpen={() => a.id && navigate({ name: 'album', id: a.id })}
-              onPlay={() => playSafe({ contextUri: a.uri })}
+              contextUri={a.uri} onPlay={() => playSafe({ contextUri: a.uri })}
             />
           ))}
         </CardGrid>

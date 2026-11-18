@@ -1,5 +1,5 @@
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { ClockRegular, PlayFilled } from '@fluentui/react-icons'
+import { ClockRegular, MoreHorizontalRegular, PlayFilled } from '@fluentui/react-icons'
 import { Fragment, memo, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { formatTime } from '@/lib/format'
 import { openUri } from '@/state/nav'
@@ -140,6 +140,18 @@ const Row = memo(function Row({
       )}
       <div className="tl-like">
         <LikeButton uri={track.uri} />
+        <button
+          className="more-btn"
+          aria-label="Mais opções"
+          onClick={(e) => {
+            e.stopPropagation()
+            const r = e.currentTarget.getBoundingClientRect()
+            onSelect(index)
+            openContextMenu({ track, x: r.left, y: r.bottom, contextUri })
+          }}
+        >
+          <MoreHorizontalRegular />
+        </button>
       </div>
       <div className="tl-dur">{formatTime(track.duration_ms)}</div>
     </div>

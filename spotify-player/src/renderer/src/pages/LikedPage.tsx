@@ -8,14 +8,21 @@ import { Hero } from '@/components/Hero'
 import { TrackList } from '@/components/TrackList'
 import { EmptyState, ErrorState } from '@/components/States'
 import { shuffleContext, likedContextUri } from '@/spotify/actions'
+import type { RGB } from '@/theme/colors'
 
-export function LikedArt({ size = 216 }: { size?: number }) {
+export function LikedArt({ size = 232 }: { size?: number }) {
   return (
-    <div className="liked-art hero-art" style={{ width: size, height: size }}>
+    <div className="liked-art" style={{ width: '100%', height: '100%' }}>
       <HeartFilled fontSize={size * 0.36} />
     </div>
   )
 }
+
+const LIKED_COLORS: [RGB, RGB, RGB] = [
+  [99, 70, 230],
+  [190, 60, 160],
+  [232, 93, 117]
+]
 
 export function LikedPage() {
   const q = useSavedTracks()
@@ -36,6 +43,8 @@ export function LikedPage() {
         kind="Playlist"
         title="Músicas curtidas"
         art={<LikedArt />}
+        fallbackColors={LIKED_COLORS}
+        contextUri={likedContextUri()}
         meta={[plural(total, 'música', 'músicas'), duration ? `${q.hasNextPage ? 'mais de ' : ''}${formatLongDuration(duration)}` : '']}
         onPlay={tracks.length ? () => playLiked(tracks, 0) : undefined}
         onShuffle={

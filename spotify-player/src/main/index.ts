@@ -37,6 +37,10 @@ let mainWindow: BrowserWindow | null = null
 let splash: BrowserWindow | null = null
 let rendererUrl = ''
 let overlayTone: OverlayTone = 'auto'
+/** Estado salvo ao entrar no mini player (para restaurar a janela normal). */
+let miniState: { bounds: Electron.Rectangle; maximized: boolean } | null = null
+const MIN_SIZE = { width: 920, height: 620 }
+const MINI_SIZE = 320
 
 // ─── Estado da janela (posição/tamanho) ───────────────────────────────────────────────────
 interface WindowState {
@@ -67,8 +71,9 @@ function loadWindowState(): WindowState {
 
 function saveWindowState(win: BrowserWindow): void {
   try {
-    const b = win.getNormalBounds()
-    const state: WindowState = { ...b, maximized: win.isMaximized() }
+    // No mini player, salva o tamanho "normal" anterior, não a janelinha.
+    const b = miniState?.bounds ?? win.getNormalBounds()
+    const state: WindowState = { ...b, maximized: miniState?.maximized ?? win.isMaximized() }
     writeFileSync(windowStateFile(), JSON.stringify(state))
   } catch {
     /* ignora */
@@ -99,17 +104,22 @@ function showSplash(): void {
     backgroundMaterial: materialSupported() ? 'mica' : undefined,
     webPreferences: { sandbox: true, contextIsolation: true }
   })
+  const accent = dark ? '#60cdff' : '#005fb8'
   const html = `<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><style>
   :root{color-scheme:${dark ? 'dark' : 'light'}}
-  html,body{margin:0;height:100%;background:transparent;font-family:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;color:${dark ? '#fff' : '#1a1a1a'};-webkit-app-region:drag;user-select:none}
+  html,body{margin:0;height:100%;background:transparent;font-family:"Segoe UI Variable Text","Segoe UI",system-ui,sans-serif;color:${dark ? '#fff' : '#1a1a1a'};-webkit-app-region:drag;user-select:none;overflow:hidden}
   body{display:grid;place-items:center}
-  .c{display:flex;flex-direction:column;align-items:center;gap:14px;animation:in .5s cubic-bezier(.1,.9,.2,1)}
-  h1{margin:0;font:600 20px "Segoe UI Variable Display","Segoe UI",sans-serif}
-  p{margin:0;font-size:13px;opacity:.7}
-  .r{width:28px;height:28px;border-radius:50%;border:3px solid ${dark ? 'rgba(255,255,255,.15)' : 'rgba(0,0,0,.1)'};border-top-color:${dark ? '#60cdff' : '#005fb8'};animation:s .8s linear infinite;will-change:transform}
-  @keyframes s{to{transform:rotate(360deg)}}
-  @keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-  </style></head><body><div class="c"><div class="r"></div><h1>Sonora</h1><p>Preparando o Widevine (DRM)…</p></div></body></html>`
+  .c{display:flex;flex-direction:column;align-items:center;gap:14px;animation:in .7s cubic-bezier(.16,1,.3,1)}
+  .logo{position:relative;width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#0078d4,#004aa0);display:flex;align-items:center;justify-content:center;gap:5px;box-shadow:0 14px 34px -10px ${accent}}
+  .logo::before{content:"";position:absolute;inset:-26px;border-radius:50%;background:radial-gradient(closest-side,${accent},transparent);opacity:.35;z-index:-1;animation:g 2.4s ease-in-out infinite}
+  .logo i{width:6px;height:30px;border-radius:3px;background:#fff;transform-origin:50% 50%;animation:b 1s ease-in-out infinite;will-change:transform}
+  .logo i:nth-child(1){animation-delay:-.2s;height:14px}.logo i:nth-child(2){animation-delay:-.5s}.logo i:nth-child(3){animation-delay:-.1s;height:22px}.logo i:nth-child(4){animation-delay:-.7s;height:34px}.logo i:nth-child(5){animation-delay:-.35s;height:10px}
+  h1{margin:6px 0 0;font:700 22px "Segoe UI Variable Display","Segoe UI",sans-serif;letter-spacing:-.01em}
+  p{margin:0;font-size:12px;opacity:.65}
+  @keyframes b{0%,100%{transform:scaleY(.45)}50%{transform:scaleY(1)}}
+  @keyframes g{0%,100%{opacity:.25}50%{opacity:.5}}
+  @keyframes in{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+  </style></head><body><div class="c"><div class="logo"><i></i><i></i><i></i><i></i><i></i></div><h1>Sonora</h1><p>Preparando o Widevine (DRM)…</p></div></body></html>`
   void splash.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`)
   splash.once('ready-to-show', () => splash?.show())
   splash.on('closed', () => (splash = null))
@@ -126,8 +136,8 @@ function createMainWindow(): BrowserWindow {
     y: state.y,
     width: state.width,
     height: state.height,
-    minWidth: 920,
-    minHeight: 620,
+    minWidth: MIN_SIZE.width,
+    minHeight: MIN_SIZE.height,
     show: false,
     title: 'Sonora',
     icon: join(__dirname, '../../resources/icon.png'),
@@ -257,6 +267,7 @@ function registerIpc(): void {
   ipcMain.on(IPC.windowOverlayTone, (event, tone: OverlayTone) => {
     overlayTone = tone
     const win = BrowserWindow.fromWebContents(event.sender)
+    if (miniState) return // o mini player mantém os botões claros sobre a capa
     try {
       win?.setTitleBarOverlay(titleBarOverlay(tone))
     } catch {
@@ -265,7 +276,45 @@ function registerIpc(): void {
   })
   ipcMain.on(IPC.windowToggleFullscreen, (event) => {
     const win = BrowserWindow.fromWebContents(event.sender)
-    if (win) win.setFullScreen(!win.isFullScreen())
+    if (win && !miniState) win.setFullScreen(!win.isFullScreen())
+  })
+
+  // Mini player: mesma janela (o Web Playback SDK continua tocando), só que pequena e sempre no topo.
+  ipcMain.on(IPC.windowMini, (event, on: boolean) => {
+    const win = BrowserWindow.fromWebContents(event.sender)
+    if (!win) return
+    try {
+      if (on && !miniState) {
+        miniState = { bounds: win.getNormalBounds(), maximized: win.isMaximized() }
+        if (win.isFullScreen()) win.setFullScreen(false)
+        if (win.isMaximized()) win.unmaximize()
+        win.setMinimumSize(240, 240)
+        const { workArea } = screen.getDisplayMatching(win.getBounds())
+        win.setBounds({
+          x: workArea.x + workArea.width - MINI_SIZE - 24,
+          y: workArea.y + workArea.height - MINI_SIZE - 24,
+          width: MINI_SIZE,
+          height: MINI_SIZE
+        })
+        win.setAspectRatio(1)
+        win.setMaximizable(false)
+        win.setAlwaysOnTop(true, 'floating')
+        win.setTitleBarOverlay({ ...titleBarOverlay('dark'), height: 32 })
+      } else if (!on && miniState) {
+        const restore = miniState
+        miniState = null
+        win.setAlwaysOnTop(false)
+        win.setAspectRatio(0)
+        win.setMaximizable(true)
+        win.setMinimumSize(MIN_SIZE.width, MIN_SIZE.height)
+        win.setBounds(restore.bounds)
+        if (restore.maximized) win.maximize()
+        win.setTitleBarOverlay(titleBarOverlay(overlayTone))
+      }
+    } catch (err) {
+      console.warn('[mini] falha ao alternar o mini player:', err)
+    }
+    win.webContents.send(IPC.windowMiniChanged, Boolean(miniState))
   })
 
   ipcMain.handle(IPC.openExternal, (_e, url: string) => {
@@ -277,7 +326,7 @@ function registerIpc(): void {
 function watchSystem(): void {
   const pushTheme = (): void => {
     broadcast(IPC.systemTheme, systemTheme())
-    if (overlayTone === 'auto' && mainWindow) {
+    if (overlayTone === 'auto' && mainWindow && !miniState) {
       try {
         mainWindow.setTitleBarOverlay(titleBarOverlay('auto'))
       } catch {

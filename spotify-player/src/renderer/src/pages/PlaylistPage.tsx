@@ -37,6 +37,8 @@ export function PlaylistPage({ id }: { id: string }) {
           plural(total, 'música', 'músicas'),
           loadedDuration ? `${q.hasNextPage ? 'mais de ' : ''}${formatLongDuration(loadedDuration)}` : ''
         ].filter(Boolean)}
+        contextUri={uri}
+        shareUrl={`https://open.spotify.com/playlist/${id}`}
         onPlay={tracks.length ? () => playSafe({ contextUri: uri }, { uris: tracks.slice(0, 300).map((t) => t.uri) }) : undefined}
         onShuffle={tracks.length ? () => void shuffleContext(uri, total, tracks.map((t) => t.uri)) : undefined}
       />

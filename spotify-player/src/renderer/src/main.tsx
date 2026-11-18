@@ -9,6 +9,7 @@ import { ThemeProvider } from './theme/ThemeProvider'
 import './styles/base.css'
 import './styles/layout.css'
 import './styles/components.css'
+import './styles/premium.css'
 
 installNoiseTexture()
 installReveal()

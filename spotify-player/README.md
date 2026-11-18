@@ -9,8 +9,14 @@ dispositivo Spotify Connect usando o **Web Playback SDK** com **Widevine** (Elec
 - Login **OAuth 2.0 com PKCE** (sem client secret); tokens criptografados com DPAPI (`safeStorage`)
 - Tocar/pausar, próxima/anterior, barra de progresso, volume, aleatório, repetir, busca, playlists,
   músicas curtidas, álbuns, artistas, fila, tela **Tocando agora** e integração com as teclas de mídia do Windows
-- Camada tingida com as cores da capa (crossfade), fundo desfocado da capa, efeito *Reveal*, animações
-  só com `transform`/`opacity` e `requestAnimationFrame` (fluido em 144 Hz)
+- Visual premium: cabeçalhos imersivos que assumem as cores de cada capa (com barra compacta de vidro ao
+  rolar), player flutuante de vidro com brilho na cor da música, banner "Continuar ouvindo", atalhos rápidos,
+  "Tocando agora" com gradiente vivo e capa que "respira" ao pausar
+- **Mini player** sempre visível (janela quadrada no canto da tela, como o do Media Player)
+- Micro-interações com física de mola: play/pause que se transforma, coração que "explode", cartões com zoom,
+  capa com inclinação 3D, prévia do tempo ao passar o mouse na barra de progresso
+- Animações só com `transform`/`opacity` e `requestAnimationFrame` (fluido em 144 Hz); respeita
+  "Reduzir animações" do app e do Windows
 
 ---
 
@@ -171,6 +177,7 @@ Outros comandos:
 | `Ctrl` + `F` | Buscar |
 | `Alt` + `←` ou botão "voltar" do mouse | Voltar |
 | `Esc` | Fechar "Tocando agora" / sair da tela cheia |
+| Botão ⧉ no player | Mini player (o botão no canto do mini volta ao app completo) |
 | Duplo clique numa faixa | Tocar a partir dela |
 | Botão direito numa faixa | Fila, álbum, artista, curtir, copiar link |
 | `F12` | DevTools (diagnóstico) |

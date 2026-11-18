@@ -37,6 +37,9 @@ export interface SonoraApi {
   window: {
     setOverlayTone(tone: OverlayTone): void
     toggleFullscreen(): void
+    /** Liga/desliga o mini player (janela pequena, quadrada e sempre visível). */
+    setMini(on: boolean): void
+    onMini(cb: (on: boolean) => void): Unsubscribe
     onFullscreen(cb: (v: boolean) => void): Unsubscribe
     onMaximized(cb: (v: boolean) => void): Unsubscribe
   }

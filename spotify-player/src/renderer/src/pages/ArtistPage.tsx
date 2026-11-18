@@ -35,11 +35,13 @@ export function ArtistPage({ id }: { id: string }) {
         images={artist.data?.images}
         round
         meta={artist.data?.genres?.length ? [artist.data.genres.slice(0, 3).join(', ')] : []}
+        contextUri={uri}
+        shareUrl={`https://open.spotify.com/artist/${id}`}
         onPlay={() => playSafe({ contextUri: uri })}
       />
       <section className="section">
         <div className="section-head">
-          <h2 className="t-subtitle">Discografia</h2>
+          <h2 className="section-title">Discografia</h2>
         </div>
         {albums.isLoading ? (
           <CardSkeletons />
@@ -54,6 +56,7 @@ export function ArtistPage({ id }: { id: string }) {
                 title={a.name}
                 subtitle={[year(a.release_date), albumType(a.album_type)].filter(Boolean).join(' • ')}
                 images={a.images}
+                contextUri={a.uri}
                 onOpen={() => a.id && navigate({ name: 'album', id: a.id })}
                 onPlay={() => playSafe({ contextUri: a.uri })}
               />

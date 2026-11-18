@@ -3,8 +3,9 @@
  * O desfoque é feito UMA vez num canvas minúsculo e depois ampliado pela GPU — muito mais barato
  * do que um `filter: blur()` animado em tela cheia, e por isso fluido em 144 Hz.
  */
+import { useEffect, useState } from 'react'
 import { create } from 'zustand'
-import { rgbToOklch, oklchToRgb, type RGB } from '@/theme/colors'
+import { rgbToOklch, oklchToRgb, rgba, type RGB } from '@/theme/colors'
 
 export interface Palette {
   key: string
@@ -12,12 +13,14 @@ export interface Palette {
   colors: [RGB, RGB, RGB]
   /** Cor mais vibrante, sem ajustes. */
   vibrant: RGB
+  /** Cor para brilhos/sombras coloridas (vibrante, luminosidade média). */
+  glow: RGB
   /** URL (blob:) de uma versão desfocada da capa, para o fundo do "Tocando agora". */
   backdrop: string | null
 }
 
 const cache = new Map<string, Palette>()
-const MAX_CACHE = 40
+const MAX_CACHE = 80
 
 function loadImage(url: string): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
@@ -42,7 +45,7 @@ interface Bucket {
   n: number
 }
 
-function computeColors(img: HTMLImageElement): { colors: [RGB, RGB, RGB]; vibrant: RGB } {
+function computeColors(img: HTMLImageElement): { colors: [RGB, RGB, RGB]; vibrant: RGB; glow: RGB } {
   const size = 40
   const canvas = document.createElement('canvas')
   canvas.width = size
@@ -80,7 +83,7 @@ function computeColors(img: HTMLImageElement): { colors: [RGB, RGB, RGB]; vibran
 
   if (candidates.length === 0) {
     const gray: RGB = [96, 96, 96]
-    return { colors: [gray, gray, gray], vibrant: gray }
+    return { colors: [gray, gray, gray], vibrant: gray, glow: gray }
   }
 
   const picked = [candidates[0]]
@@ -93,9 +96,11 @@ function computeColors(img: HTMLImageElement): { colors: [RGB, RGB, RGB]; vibran
 
   // Normaliza para servir de fundo: luminosidade e croma controlados (o tema decide a opacidade).
   const adjust = (c: (typeof picked)[number]): RGB => oklchToRgb(Math.min(0.72, Math.max(0.42, c.L)), Math.max(0.04, Math.min(0.2, c.C * 1.25)), c.H)
+  const top = picked[0]
   return {
     colors: [adjust(picked[0]), adjust(picked[1]), adjust(picked[2])],
-    vibrant: picked[0].rgb
+    vibrant: top.rgb,
+    glow: oklchToRgb(0.62, Math.max(0.1, Math.min(0.22, top.C * 1.4)), top.H)
   }
 }
 
@@ -125,16 +130,12 @@ export async function extractPalette(url: string): Promise<Palette | null> {
   }
   try {
     const img = await loadImage(url)
-    const { colors, vibrant } = computeColors(img)
+    const { colors, vibrant, glow } = computeColors(img)
     const backdrop = await makeBackdrop(img)
-    const palette: Palette = { key: url, colors, vibrant, backdrop }
+    const palette: Palette = { key: url, colors, vibrant, glow, backdrop }
     cache.set(url, palette)
-    if (cache.size > MAX_CACHE) {
-      const oldest = cache.keys().next().value as string
-      const old = cache.get(oldest)
-      if (old?.backdrop) URL.revokeObjectURL(old.backdrop)
-      cache.delete(oldest)
-    }
+    // Os blobs são minúsculos (64×64); não revogamos as URLs para não quebrar imagens ainda na tela.
+    if (cache.size > MAX_CACHE) cache.delete(cache.keys().next().value as string)
     return palette
   } catch (err) {
     console.warn('[paleta] não foi possível ler a capa:', err)
@@ -144,3 +145,40 @@ export async function extractPalette(url: string): Promise<Palette | null> {
 
 /** Paleta da faixa atual (atualizada pelo App quando a faixa muda). */
 export const usePalette = create<{ palette: Palette | null }>(() => ({ palette: null }))
+
+/** Paleta de qualquer capa (cabeçalhos de playlist/álbum/artista, banners). */
+export function useImagePalette(url: string | null | undefined): Palette | null {
+  const [palette, setPalette] = useState<Palette | null>(() => (url ? (cache.get(url) ?? null) : null))
+  useEffect(() => {
+    if (!url) {
+      setPalette(null)
+      return
+    }
+    const hit = cache.get(url)
+    if (hit) {
+      setPalette(hit)
+      return
+    }
+    let alive = true
+    void extractPalette(url).then((p) => {
+      if (alive) setPalette(p)
+    })
+    return () => {
+      alive = false
+    }
+  }, [url])
+  return palette
+}
+
+/** Variáveis CSS (--p1, --p2, --p3, --pglow) para estilizar um bloco com as cores de uma paleta. */
+export function paletteVars(p: Palette | null, fallback?: [RGB, RGB, RGB]): Record<string, string> {
+  const colors = p?.colors ?? fallback
+  if (!colors) return {}
+  const glow = p?.glow ?? colors[0]
+  return {
+    '--p1': rgba(colors[0], 1),
+    '--p2': rgba(colors[1], 1),
+    '--p3': rgba(colors[2], 1),
+    '--pglow': rgba(glow, 1)
+  }
+}
